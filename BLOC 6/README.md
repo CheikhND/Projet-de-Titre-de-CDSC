@@ -1,0 +1,3 @@
+Direction de projets de gestion de données
+
+L'objectif est de mener un projet data science de A à Z. Nous avons choisit de développer une application d'estimation des prix d'une nuité ........
