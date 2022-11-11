@@ -1,0 +1,38 @@
+version: '3'
+services:
+  server:
+    build: .
+    working_dir: /usr/src/app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/usr/src/app
+    command: runServer.sh
+
+  trainmodel: #
+    build: .
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    links:
+      - "server:localhost"
+    depends_on:
+      - server
+    command: [ "python", "clf-train-registry.py", "clf-model", "http://server:5000", "--outputTestData", "test.csv" ]
+
+  servemodel:
+    build: .
+    depends_on:
+      - trainmodel
+      - server
+
+    working_dir: /usr/src/app
+    ports:
+      - "1234:1234"
+    volumes:
+      - .:/usr/src/app
+    links:
+      - "server:server"
+    environment:
+      - MLFLOW_TRACKING_URI=http://server:5000
+    command: [ "serveModel.sh", "models:/clf-model/Staging" ]
